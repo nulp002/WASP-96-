@@ -1,0 +1,45 @@
+pip install matplotlib numpy scipy astropy jupyter notebook pandas eleanor
+from IPython.display import Image
+
+import warnings
+warnings.filterwarnings('ignore')
+import eleanor
+import numpy as np
+from astropy import units as u
+import matplotlib.pyplot as plt
+
+eleanor.Update(sector=33)
+
+star = eleanor.Source(name='WASP-76b', sector=30)
+
+data = eleanor.TargetData(star, height=15, width=15, bkg_size=31, do_psf=True, do_pca=True, regressors='corner')
+plt.figure(figsize=(15,5))
+
+q = data.quality == 0
+
+data.bkg_type
+
+plt.figure(figsize=(15,5))
+
+plt.plot(data.time, data.flux_bkg, 'k', label='1D postcard', linewidth=3)
+plt.plot(data.time, data.tpf_flux_bkg, 'r--', label='1D TPF', linewidth=2)
+plt.ylabel('Normalized Flux')
+plt.xlabel('Time [BJD - 2457000]')
+plt.legend();
+
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10,4))
+ax1.imshow(data.tpf[0])
+ax1.set_title('Target Pixel File')
+ax2.imshow(data.bkg_tpf[0])
+ax2.set_title('2D interpolated background');
+
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10,4))
+ax1.imshow(data.tpf[0])
+ax1.set_title('Target Pixel File')
+ax2.imshow(data.aperture)
+ax2.set_title('Aperture');
+
+data.save()
+
+lk = data.to_lightkurve()
+lk.plot()
